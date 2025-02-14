@@ -29,7 +29,6 @@ resume_strategy_profile_task:
     An updated resume that effectively highlights the candidate's qualifications and experiences 
     relevant to the job.
   output_file: tailored_resume.md
-  context: [research_task, profile_task]
   agent: resume_strategist
 
 interview_preparation_task:
@@ -42,5 +41,4 @@ interview_preparation_task:
     A document containing key questions and talking points that the candidate should prepare
     for the initial interview.
   output_file: interview_materials.md
-  context: [research_task, profile_task, resume_strategy_task]
   agent: interview_preparer

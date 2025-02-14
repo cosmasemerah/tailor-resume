@@ -12,7 +12,7 @@ load_dotenv()
 class ResumeTools:
     """Tools for the resume tailor agents"""
     
-    def __init__(self, resume_path='./fake_resume.md'):
+    def __init__(self, resume_path='./cosmas_emerah_resume.md'):
         """Initialize tools with configurable resume path"""
         self.search_tool = SerperDevTool(api_key=os.getenv("SERPER_API_KEY"))
         self.scrape_tool = ScrapeWebsiteTool()

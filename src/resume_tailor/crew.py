@@ -21,11 +21,11 @@ class ResumeTailor():
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 
-	def __init__(self, resume_path='./fake_resume.md'):
+	def __init__(self, resume_path='./cosmas_emerah_resume.md'):
 		"""Initialize the crew with tools"""
 		# Initialize Gemini LLM with Google AI Studio configuration
 		self.llm = LLM(
-			model="gemini/gemini-1.5-pro-latest",
+			model="gemini/gemini-1.5-pro",
 			temperature=0.7,
 			api_key=os.getenv("GEMINI_API_KEY")
 		)
@@ -75,27 +75,31 @@ class ResumeTailor():
 	@task
 	def research_task(self) -> Task:
 		return Task(
-			config=self.tasks_config['research_task']
+			config=self.tasks_config['research_task'],
+			async_execution = True
 		)
 
 	@task
 	def profile_task(self) -> Task:
 		return Task(
-			config=self.tasks_config['profile_task']
+			config=self.tasks_config['profile_task'],
+			async_execution = True
 		)
 
 	@task
 	def resume_strategy_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['resume_strategy_profile_task'],
-			output_file='tailored_resume.md'
+			output_file='tailored_resume.md',
+			context=[self.research_task(), self.profile_task()]
 		)
 
 	@task
 	def interview_preparation_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['interview_preparation_task'],
-			output_file='interview_materials.md'
+			output_file='interview_materials.md',
+			context=[self.research_task(), self.profile_task(), self.resume_strategy_task()]
 		)
 
 	@crew

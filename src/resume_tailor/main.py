@@ -1,41 +1,77 @@
 #!/usr/bin/env python
 import sys
 import warnings
+from typing import Optional, List
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from resume_tailor.crew import ResumeTailor
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
-# This main file is intended to be a way for you to run your
-# crew locally, so refrain from adding unnecessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
+app = FastAPI(
+    title="Resume Tailor API",
+    description="API for tailoring resumes based on job postings using AI",
+    version="1.0.0"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins in development
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class TailorRequest(BaseModel):
+    job_posting_url: str
+    github_url: str
+    personal_writeup: str
+    resume_content: str
+
+@app.post("/api/tailor")
+async def tailor_resume(request: TailorRequest):
+    """
+    Tailor a resume based on the job posting and personal information.
+    """
+    try:
+        crew = ResumeTailor(resume_content=request.resume_content)
+        
+        inputs = {
+            'job_posting_url': request.job_posting_url,
+            'github_url': request.github_url,
+            'personal_writeup': request.personal_writeup
+        }
+        
+        result = crew.crew().kickoff(inputs=inputs)
+
+        # The research_task output will now be a JobResearch model
+        research_output = result.research_task.pydantic
+
+        return {
+            "status": "success",
+            "message": "Resume tailored successfully",
+            "data": {
+                "title": f"{research_output.job_title} at {research_output.company}",
+                "resume_strategy_task": result.resume_strategy_task.raw,
+                "interview_preparation_task": result.interview_preparation_task.raw
+            }
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"An error occurred while tailoring the resume: {str(e)}"
+        )
 
 def run():
-    """
-    Run the crew.
-    """
-    inputs = {
-        'job_posting_url': 'https://job-boards.greenhouse.io/perplexityai/jobs/4148325007',
-        'github_url': 'https://github.com/cosmasemerah',
-        'personal_writeup': """Cosmas is a skilled Full Stack Developer with a proven track record 
-        in building scalable web applications. With expertise in JavaScript/TypeScript, Python, 
-        and modern frameworks like Next.js and React, he has successfully delivered multiple 
-        high-impact projects. Notable achievements include developing a SaaS platform that 
-        generated ₦2M+ in revenue within 8 weeks and implementing significant performance 
-        optimizations resulting in 40% LCP improvement. Cosmas has strong experience in 
-        database management (Supabase, MongoDB), security implementations, and UI/UX design. 
-        His background in Mathematics & Statistics, combined with certifications in AI and 
-        deep learning, demonstrates his analytical approach and commitment to staying current 
-        with emerging technologies. He excels in technical leadership, cross-functional 
-        collaboration, and has a proven ability to mentor junior developers."""
-    }
-    
-    try:
-        ResumeTailor().crew().kickoff(inputs=inputs)
-    except Exception as e:
-        raise Exception(f"An error occurred while running the crew: {e}")
+    """Run the FastAPI server using uvicorn."""
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
+if __name__ == "__main__":
+    run()
 
 def train():
     """

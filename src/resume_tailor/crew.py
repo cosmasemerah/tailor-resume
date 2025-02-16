@@ -1,11 +1,23 @@
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from .tools.resume_tools import ResumeTools
+from resume_tailor.tools.resume_tools import ResumeTools
 import os
 from dotenv import load_dotenv
+from pydantic import BaseModel
+from typing import List
 
 # Load environment variables
 load_dotenv()
+
+class JobRequirements(BaseModel):
+    skills: List[str]
+    qualifications: List[str]
+    experience: List[str]
+
+class JobResearch(BaseModel):
+    job_title: str
+    company: str
+    requirements: JobRequirements
 
 # If you want to run a snippet of code before or after the crew starts, 
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -21,15 +33,15 @@ class ResumeTailor():
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 
-	def __init__(self, resume_path='./cosmas_emerah_resume.md'):
+	def __init__(self, resume_content: str):
 		"""Initialize the crew with tools"""
 		# Initialize Gemini LLM with Google AI Studio configuration
 		self.llm = LLM(
-			model="gemini/gemini-1.5-pro",
+			model="openai/gpt-4o-mini",
 			temperature=0.7,
-			api_key=os.getenv("GEMINI_API_KEY")
+			api_key=os.getenv("OPENAI_API_KEY")
 		)
-		self.tools = ResumeTools(resume_path=resume_path)
+		self.tools = ResumeTools(resume_content=resume_content)
 
 	# If you would like to add tools to your agents, you can learn more about it here:
 	# https://docs.crewai.com/concepts/agents#agent-tools
@@ -76,7 +88,8 @@ class ResumeTailor():
 	def research_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['research_task'],
-			async_execution = True
+			async_execution = True,
+			output_pydantic=JobResearch
 		)
 
 	@task

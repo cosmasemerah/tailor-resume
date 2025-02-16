@@ -1,11 +1,16 @@
 [project]
 name = "resume_tailor"
 version = "0.1.0"
-description = "resume-tailor using crewAI"
+description = "AI-powered resume tailoring tool"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.13"
 dependencies = [
-    "crewai[tools]>=0.102.0,<1.0.0"
+    "crewai[tools]>=0.102.0,<1.0.0",
+    "langchain_community>=0.0.29",
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.0.0"
 ]
 
 [project.scripts]
@@ -21,3 +26,9 @@ build-backend = "hatchling.build"
 
 [tool.crewai]
 type = "crew"
+
+[tool.pytest.ini_options]
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]

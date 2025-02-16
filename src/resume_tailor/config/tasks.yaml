@@ -2,10 +2,11 @@ research_task:
   description: >
     Analyze the job posting URL provided ({job_posting_url}) to
     extract key skills, experiences, and qualifications required.
+    Also extract the job title and company name if available.
     Use the tools to gather content and identify and categorize the requirements.
   expected_output: >
-    A structured list of job requirements, including necessary skills
-    qualifications, and experiences.
+    A structured output containing the job title, company name, and requirements.
+    Format as a valid JSON matching the JobResearch model structure.
   agent: researcher
 
 profile_task:

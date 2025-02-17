@@ -35,11 +35,11 @@ class ResumeTailor():
 
 	def __init__(self, resume_content: str):
 		"""Initialize the crew with tools"""
-		# Initialize Gemini LLM with Google AI Studio configuration
+		# Initialize LLM with retry configuration
 		self.llm = LLM(
 			model="openai/gpt-4o-mini",
 			temperature=0.7,
-			api_key=os.getenv("OPENAI_API_KEY")
+			api_key=os.getenv("OPENAI_API_KEY"),
 		)
 		self.tools = ResumeTools(resume_content=resume_content)
 
@@ -51,7 +51,8 @@ class ResumeTailor():
 			config=self.agents_config['researcher'],
 			tools=self.tools.get_researcher_tools(),
 			llm=self.llm,
-			verbose=True
+			verbose=True,
+			max_rpm=2  # Limit to 2 requests per minute
 		)
 
 	@agent
@@ -60,7 +61,8 @@ class ResumeTailor():
 			config=self.agents_config['profiler'],
 			tools=self.tools.get_profile_tools(),
 			llm=self.llm,
-			verbose=True
+			verbose=True,
+			max_rpm=2  # Limit to 2 requests per minute
 		)
 
 	@agent
@@ -69,7 +71,8 @@ class ResumeTailor():
 			config=self.agents_config['resume_strategist'],
 			tools=self.tools.get_resume_tools(),
 			llm=self.llm,
-			verbose=True
+			verbose=True,
+			max_rpm=2  # Limit to 2 requests per minute
 		)
 
 	@agent
@@ -78,7 +81,8 @@ class ResumeTailor():
 			config=self.agents_config['interview_preparer'],
 			tools=self.tools.get_interview_tools(),
 			llm=self.llm,
-			verbose=True
+			verbose=True,
+			max_rpm=2  # Limit to 2 requests per minute
 		)
 
 	# To learn more about structured task outputs, 
@@ -88,7 +92,6 @@ class ResumeTailor():
 	def research_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['research_task'],
-			async_execution = True,
 			output_pydantic=JobResearch
 		)
 
@@ -96,7 +99,6 @@ class ResumeTailor():
 	def profile_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['profile_task'],
-			async_execution = True
 		)
 
 	@task

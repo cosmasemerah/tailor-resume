@@ -60,9 +60,22 @@ async def tailor_resume(request: TailorRequest):
             }
         }
     except Exception as e:
+        error_message = str(e)
+        status_code = 500
+        error_type = "Internal Server Error"
+        
+        # Check if it's a rate limit error
+        if "rate limit" in error_message.lower():
+            status_code = 429
+            error_type = "Rate Limit Exceeded"
+            error_message = "The AI service is currently at capacity. Please wait a few minutes and try again."
+        
         raise HTTPException(
-            status_code=500,
-            detail=f"An error occurred while tailoring the resume: {str(e)}"
+            status_code=status_code,
+            detail={
+                "type": error_type,
+                "message": error_message
+            }
         )
 
 def run():

@@ -92,7 +92,7 @@ class ResumeTailor():
 	def research_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['research_task'],
-			output_pydantic=JobResearch
+			output_json=JobResearch  # Force the LLM to return a JSON object
 		)
 
 	@task
@@ -114,7 +114,8 @@ class ResumeTailor():
 		return Task(
 			config=self.tasks_config['interview_preparation_task'],
 			output_file='interview_materials.md',
-			context=[self.research_task(), self.profile_task(), self.resume_strategy_task()]
+			context=[self.research_task(), self.profile_task(), self.resume_strategy_task()],
+			tools=self.tools.get_interview_tools(),  # Ensure tools are available
 		)
 
 	@crew
@@ -128,5 +129,6 @@ class ResumeTailor():
 			tasks=self.tasks, # Automatically created by the @task decorator
 			process=Process.sequential,
 			verbose=True,
-			# process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+			max_rpm=3,
+			share_crew=False
 		)

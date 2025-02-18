@@ -6,40 +6,45 @@ research_task:
     Use the tools to gather content and identify and categorize the requirements.
   expected_output: >
     A structured output containing the job title, company name, and requirements.
-    Format as a valid JSON matching the JobResearch model structure.
   agent: researcher
 
 profile_task:
   description: >
-    Compile a detailed personal and professional profile using the GitHub ({github_url}) URLs,
-    and personal write-up ({personal_writeup}). Utilize tools to extract and synthesize
-    information from these sources.
+    First, read and analyze the provided resume content using the read_resume tool.
+    Then compile a detailed personal and professional profile by combining the resume content with
+    information from the GitHub ({github_url}) URLs and personal write-up ({personal_writeup}).
+    Extract key skills, experiences, and achievements from the resume.
+    Utilize tools to extract and synthesize information from all these sources.
   expected_output: >
     A comprehensive profile document that includes skills, project experiences,
-    contributions, interests and communication style.
+    contributions, interests and communication style, incorporating details from the resume.
   agent: profiler
 
 resume_strategy_profile_task:
   description: >
-    Using the profile and job requirements obtained from previous tasks, tailor the resume to
-    highlight the most relevant areas. Employ tools to adjust and enhance the 
-    resume content. Make sure this is the best resume even but don't make up any information.
-    Update every section, inlcuding the initial summary, work experience, skills, 
-    and education. All to better reflrect the candidates abilities and how it matches the job posting.
+    First, read and analyze the provided resume content using the read_resume tool.
+    Then, using the profile and job requirements obtained from previous tasks,
+    tailor the resume to highlight the most relevant areas. Use the existing resume
+    content as the foundation and enhance it based on the job requirements.
+    Make sure this is the best resume even but don't make up any information.
+    Update every section, including the initial summary, work experience, skills,
+    and education. All to better reflect the candidate's actual abilities and
+    how they match the job posting.
   expected_output: >
     An updated resume that effectively highlights the candidate's qualifications and experiences 
-    relevant to the job.
+    relevant to the job, based on their actual resume content.
   output_file: tailored_resume.md
   agent: resume_strategist
 
 interview_preparation_task:
   description: >
-    Create a set of potential interview questions and talking points based on the tailored
-    resume and job requirements. Utilize tools to generate relevant questions and discussion 
-    points. Make sure to use these question and talking points to help the candiadte highlight 
-    the main points of the resume and how it matches the job posting.
+    First, read and analyze the provided resume content using the read_resume tool.
+    Then create a set of potential interview questions and talking points based on
+    the actual resume content, tailored resume, and job requirements. The questions
+    and talking points should help the candidate highlight their real experience and
+    skills from their resume and how they match the job posting.
   expected_output: >
     A document containing key questions and talking points that the candidate should prepare
-    for the initial interview.
+    for the initial interview, based on their actual experience and skills.
   output_file: interview_materials.md
   agent: interview_preparer

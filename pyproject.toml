@@ -32,3 +32,7 @@ addopts = "-ra -q"
 testpaths = [
     "tests",
 ]
+
+[project.urls]
+Homepage = "https://github.com/cosmasemerah/resume-tailor"
+Repository = "https://github.com/cosmasemerah/resume-tailor.git"

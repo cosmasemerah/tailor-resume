@@ -1,6 +1,0 @@
-User name is Cosmas Emerah.
-User is a Full Stack Developer.
-User is interested in Web Development, AI/ML Integration, and System Architecture.
-User is based in Nigeria.
-User has experience in JavaScript/TypeScript, Python, Next.js, React, and various modern web technologies.
-User has strong background in building scalable web applications and e-commerce platforms.
